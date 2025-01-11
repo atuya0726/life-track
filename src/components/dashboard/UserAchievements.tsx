@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import Link from 'next/link';
 
 type Achievement = {
   id: string;
@@ -16,10 +17,13 @@ interface DatabaseUserAchievement {
   points_at_achievement: number;
 }
 
+type SortOrder = 'asc' | 'desc';
+
 export default function UserAchievements() {
   const [achievements, setAchievements] = useState<DatabaseUserAchievement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -28,7 +32,6 @@ export default function UserAchievements() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('ユーザーが見つかりません');
 
-        // ユーザーの達成済み実績を取得
         const { data, error } = await supabase
           .from('user_achievements')
           .select(`
@@ -46,7 +49,6 @@ export default function UserAchievements() {
 
         if (error) throw error;
 
-        // 型安全な変換を行う
         const formattedData = (data || []).map(item => ({
           id: item.id,
           achievement: item.achievement[0] || item.achievement,
@@ -66,6 +68,15 @@ export default function UserAchievements() {
     loadUserAchievements();
   }, [supabase]);
 
+  const sortedAchievements = [...achievements].sort((a, b) => {
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    return (a.points_at_achievement - b.points_at_achievement) * multiplier;
+  });
+
+  const toggleSortOrder = () => {
+    setSortOrder(current => current === 'asc' ? 'desc' : 'asc');
+  };
+
   if (loading) return (
     <div className="flex justify-center items-center min-h-[200px]">
       <div className="text-xl text-gray-600 dark:text-gray-300">読み込み中...</div>
@@ -81,19 +92,38 @@ export default function UserAchievements() {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          あなたの実績
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            あなたの実績
+          </h2>
+          <div className="flex gap-4">
+            <button
+              onClick={toggleSortOrder}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm"
+            >
+              <span className="mr-2">ポイント順</span>
+              <span className="text-blue-600 dark:text-blue-400">
+                {sortOrder === 'asc' ? '↑' : '↓'}
+              </span>
+            </button>
+            <Link
+              href="/achievements"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              実績を探す
+            </Link>
+          </div>
+        </div>
         <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">
           総獲得ポイント: {achievements.reduce((sum, a) => sum + a.points_at_achievement, 0)}
         </div>
         <div className="space-y-4">
-          {achievements.length === 0 ? (
+          {sortedAchievements.length === 0 ? (
             <p className="text-gray-600 dark:text-gray-400">
-              まだ実績を達成していません。チャレンジしてみましょう！
+              まだ実績を達成していません。新しい実績にチャレンジしてみましょう！
             </p>
           ) : (
-            achievements.map((item) => (
+            sortedAchievements.map((item) => (
               <div
                 key={item.id}
                 className="border-b border-gray-200 dark:border-gray-700 last:border-0 pb-4 last:pb-0"

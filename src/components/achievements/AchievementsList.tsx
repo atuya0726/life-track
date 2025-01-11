@@ -14,17 +14,59 @@ type Achievement = {
   achieved: boolean;
   achievementCount: number;
   totalUsers: number;
+  category: {
+    id: string;
+    name: string;
+    description: string;
+  } | null;
+};
+
+type Category = {
+  id: string;
+  name: string;
+  description: string;
+  display_order: number;
 };
 
 type ErrorResponse = {
   message: string;
 };
 
+type AchievementWithCategory = {
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+  custom_achievement: boolean;
+  category: {
+    id: string;
+    name: string;
+    description: string;
+  };
+};
+
+type FormattedAchievement = {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
+  achieved: boolean;
+  achievementCount: number;
+  totalUsers: number;
+  category: {
+    id: string;
+    name: string;
+    description: string;
+  };
+};
+
 export default function AchievementsList() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<FormattedAchievement[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ErrorResponse | null>(null);
-  const [sortOrder, setSortOrder] = useState<'points' | 'date'>('points');
+  const [sortOrder, setSortOrder] = useState<'points_desc' | 'points_asc' | 'date'>('points_desc');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     title: string;
@@ -43,17 +85,29 @@ export default function AchievementsList() {
 
   // ポイントを計算する関数
   const calculatePoints = (achievementCount: number, totalUsers: number): number => {
-    if (totalUsers === 0) return 10; // デフォルトポイント
-    
-    // 達成率を計算（0から1の値）
+    if (totalUsers === 0) return 10;
     const achievementRate = achievementCount / totalUsers;
-    
-    // 基本ポイント（達成率が低いほど高得点）
     const basePoints = Math.round(100 * (1 - achievementRate));
-    
-    // 最小ポイントは10点
     return Math.max(basePoints, 10);
   };
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('achievement_categories')
+          .select('*')
+          .order('display_order');
+
+        if (categoriesError) throw categoriesError;
+        setCategories(categoriesData);
+      } catch (e) {
+        console.error('カテゴリの読み込みエラー:', e);
+      }
+    }
+
+    loadCategories();
+  }, [supabase]);
 
   useEffect(() => {
     async function loadAchievements() {
@@ -72,9 +126,14 @@ export default function AchievementsList() {
             title,
             description,
             created_at,
-            custom_achievement
+            custom_achievement,
+            category:achievement_categories!inner (
+              id,
+              name,
+              description
+            )
           `)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }) as { data: AchievementWithCategory[] | null, error: any };
         
         console.log('実績データの取得結果:', { data: achievementsData, error: achievementsError });
 
@@ -141,18 +200,27 @@ export default function AchievementsList() {
         });
 
         // データを整形
-        const formattedAchievements = achievementsData.map(achievement => ({
-          id: achievement.id,
-          title: achievement.title,
-          description: achievement.description,
-          points: calculatePoints(
-            achievementCounts[achievement.id],
-            totalUsers || 1
-          ),
-          achieved: userAchievements?.some(ua => ua.achievement_id === achievement.id) ?? false,
-          achievementCount: achievementCounts[achievement.id],
-          totalUsers: totalUsers || 1,
-        }));
+        const formattedAchievements = (achievementsData || [])
+          .filter((achievement): achievement is AchievementWithCategory => 
+            achievement !== null && achievement.category !== null
+          )
+          .map(achievement => ({
+            id: achievement.id,
+            title: achievement.title,
+            description: achievement.description,
+            points: calculatePoints(
+              achievementCounts[achievement.id],
+              totalUsers || 1
+            ),
+            achieved: userAchievements?.some(ua => ua.achievement_id === achievement.id) ?? false,
+            achievementCount: achievementCounts[achievement.id],
+            totalUsers: totalUsers || 1,
+            category: {
+              id: achievement.category.id,
+              name: achievement.category.name,
+              description: achievement.category.description
+            }
+          }));
 
         console.log('整形済みの実績データ:', formattedAchievements);
         setAchievements(formattedAchievements);
@@ -181,6 +249,23 @@ export default function AchievementsList() {
     });
   };
 
+  const filteredAchievements = achievements.filter(achievement => 
+    selectedCategory === 'all' || achievement.category?.id === selectedCategory
+  );
+
+  const sortedAchievements = [...filteredAchievements].sort((a, b) => {
+    switch (sortOrder) {
+      case 'points_desc':
+        return b.points - a.points;
+      case 'points_asc':
+        return a.points - b.points;
+      case 'date':
+        return 0; // date順は既にAPIで処理済み
+      default:
+        return 0;
+    }
+  });
+
   if (loading) return (
     <div className="flex justify-center items-center min-h-[200px]">
       <div className="text-xl text-gray-600 dark:text-gray-300">読み込み中...</div>
@@ -196,31 +281,51 @@ export default function AchievementsList() {
   return (
     <>
       <div className="space-y-6">
-        <div className="flex justify-between items-center px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-6">
           <Link
             href="/dashboard"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             ← ダッシュボードへ戻る
           </Link>
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as 'points' | 'date')}
-            className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
-          >
-            <option value="points">ポイント順</option>
-            <option value="date">新着順</option>
-          </select>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+            >
+              <option value="all">すべてのカテゴリ</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'points_desc' | 'points_asc' | 'date')}
+              className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+            >
+              <option value="points_desc">ポイント順（高い順）</option>
+              <option value="points_asc">ポイント順（低い順）</option>
+              <option value="date">新着順</option>
+            </select>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-          {achievements.map((achievement) => (
+          {sortedAchievements.map((achievement) => (
             <div
               key={achievement.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
             >
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {achievement.title}
-              </h3>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {achievement.title}
+                </h3>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
+                  {achievement.category?.name || 'カテゴリなし'}
+                </span>
+              </div>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {achievement.description}
               </p>
@@ -249,7 +354,7 @@ export default function AchievementsList() {
       </div>
       <AchievementModal
         isOpen={modalState.isOpen}
-        onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
         title={modalState.title}
         points={modalState.points}
         achievementId={modalState.achievementId}

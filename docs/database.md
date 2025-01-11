@@ -2,8 +2,17 @@
 
 ## テーブル構成
 
+### achievement_categories（実績カテゴリテーブル）
+- id: uuid (PK)
+- name: text (カテゴリ名)
+- description: text (カテゴリの説明)
+- display_order: integer (表示順)
+- created_at: timestamp with time zone
+- updated_at: timestamp with time zone
+
 ### achievements（実績テーブル）
 - id: uuid (PK)
+- category_id: uuid (FK -> achievement_categories.id) NOT NULL
 - title: text (実績のタイトル)
 - description: text (実績の説明)
 - custom_achievement: boolean (カスタム実績かどうか)
@@ -20,6 +29,37 @@
 - updated_at: timestamp with time zone
 - unique(user_id, achievement_id) -- 同じ実績を複数回達成できない制約
 
+## カテゴリ管理
+
+### カテゴリの役割
+- 実績を論理的なグループに分類
+- ユーザーの実績探索を容易にする
+- 実績の管理と整理を効率化
+
+### カテゴリの特徴
+- 各実績は必ず1つのカテゴリに属する
+- カテゴリの表示順は一意の整数値で管理
+- カテゴリ名は必須、説明は任意
+- 全ユーザーが参照可能
+
+### 標準カテゴリ
+1. 日常生活（display_order: 1）
+   - 毎日の生活の中での小さな達成
+2. 健康（display_order: 2）
+   - 健康的な生活習慣に関する実績
+3. 学習（display_order: 3）
+   - 新しいスキルや知識の習得
+4. 仕事（display_order: 4）
+   - 職場やキャリアでの成長
+5. 趣味（display_order: 5）
+   - 趣味や特技の上達
+6. 社会貢献（display_order: 6）
+   - コミュニティへの貢献
+7. 人間関係（display_order: 7）
+   - 家族や友人との関係づくり
+8. マイルストーン（display_order: 8）
+   - 人生の重要な節目
+
 ## ポイント計算の仕組み
 
 ### 動的ポイント計算
@@ -35,6 +75,14 @@
 - ポイントの記録と更新は`record_achievement`関数で一括処理
 
 ## セキュリティ設定（RLS）
+
+### achievement_categories
+```sql
+-- 全ユーザーがカテゴリを参照可能
+CREATE POLICY "全ユーザーがカテゴリを参照可能" ON achievement_categories
+  FOR SELECT TO authenticated
+  USING (true);
+```
 
 ### achievements
 ```sql
@@ -92,14 +140,34 @@ $$;
 - 7日間のバックアップを保持
 
 ## データの制約
+- カテゴリ名は必須
+- カテゴリの説明は任意
+- 実績は必ずいずれかのカテゴリに属する（NOT NULL制約）
+- カテゴリの表示順は一意（UNIQUE制約）
 - タイトルは必須
 - 説明文は任意
 - タイムスタンプは自動的にUTC時間で記録
 - ユーザーは同じ実績を複数回達成できない
 - カスタム実績は作成者のユーザーIDが必須
 
+## 初期データ（カテゴリ）
+```sql
+INSERT INTO achievement_categories (name, description, display_order) VALUES
+  ('日常生活', '毎日の生活の中での小さな達成', 1),
+  ('健康', '健康的な生活習慣に関する実績', 2),
+  ('学習', '新しいスキルや知識の習得', 3),
+  ('仕事', '職場やキャリアでの成長', 4),
+  ('趣味', '趣味や特技の上達', 5),
+  ('社会貢献', 'コミュニティへの貢献', 6),
+  ('人間関係', '家族や友人との関係づくり', 7),
+  ('マイルストーン', '人生の重要な節目', 8);
+```
+
 ## 今後の拡張予定
-1. シェア機能の追加
-2. 実績カテゴリの追加
-3. 実績の達成条件の自動チェック機能
-4. 実績の達成順序の依存関係の管理 
+1. シテゴリごとの達成率の集計機能
+2. カテゴリ別のポイント計算ルール
+3. カテゴリ間の関連付け機能
+4. カテゴリごとのバッジやアイコン
+5. シェア機能の追加
+6. 実績の達成条件の自動チェック機能
+7. 実績の達成順序の依存関係の管理 
