@@ -60,9 +60,14 @@ export default function LandingPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                   </div>
-                  <h3 className="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">カスタム実績</h3>
+                  <h3 className="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">
+                    カスタム実績
+                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-300">
+                      Coming Soon
+                    </span>
+                  </h3>
                   <p className="mt-5 text-base text-gray-500 dark:text-gray-400">
-                    自分だけの実績を作成できます。あなたならではの目標や達成を設定しましょう。
+                    近日公開予定！自分だけの実績を作成できるようになります。あなたならではの目標や達成を設定しましょう。
                   </p>
                 </div>
               </div>
