@@ -102,19 +102,19 @@ export default function UserAchievements() {
               className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm"
             >
               <span className="mr-2">ポイント順</span>
-              <span className="text-blue-600 dark:text-blue-400">
+              <span className="text-primary-600 dark:text-primary-400">
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </span>
             </button>
             <Link
               href="/achievements"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
             >
               実績を探す
             </Link>
           </div>
         </div>
-        <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">
+        <div className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-6">
           総獲得ポイント: {achievements.reduce((sum, a) => sum + a.points_at_achievement, 0)}
         </div>
         <div className="space-y-4">
@@ -140,7 +140,7 @@ export default function UserAchievements() {
                       達成日: {new Date(item.achieved_at).toLocaleDateString('ja-JP')}
                     </div>
                   </div>
-                  <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  <div className="text-lg font-semibold text-primary-600 dark:text-primary-400">
                     +{item.points_at_achievement}pt
                   </div>
                 </div>

@@ -318,11 +318,11 @@ export default function AchievementsList() {
               key={achievement.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
             >
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   {achievement.title}
                 </h3>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/20 text-primary-800 dark:text-primary-300">
                   {achievement.category?.name || 'カテゴリなし'}
                 </span>
               </div>
@@ -341,8 +341,8 @@ export default function AchievementsList() {
                     achievement.achieved ? 'cancel' : 'achieve'
                   )}
                   className={achievement.achieved
-                    ? "px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-900/40 transition-colors cursor-pointer"
-                    : "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    ? "px-4 py-2 bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-900/40 transition-colors cursor-pointer"
+                    : "px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors"
                   }
                 >
                   {achievement.achieved ? '達成済み' : '達成'}

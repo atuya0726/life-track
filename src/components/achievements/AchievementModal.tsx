@@ -118,7 +118,7 @@ export default function AchievementModal({
                   {mode === 'achieve' && (
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 dark:bg-blue-900/20 px-4 py-2 text-sm font-medium text-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40 focus:outline-none"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-primary-100 dark:bg-primary-900/20 px-4 py-2 text-sm font-medium text-primary-900 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-900/40 focus:outline-none"
                       onClick={() => handleConfirm(true)}
                     >
                       達成してシェア
@@ -127,7 +127,7 @@ export default function AchievementModal({
                   <button
                     type="button"
                     className={mode === 'achieve'
-                      ? "inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none"
+                      ? "inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none"
                       : "inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none"
                     }
                     onClick={() => handleConfirm(false)}

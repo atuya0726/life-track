@@ -8,7 +8,7 @@ export default function LandingPage() {
         <div className="text-center">
           <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
             <span className="block">Life Track</span>
-            <span className="block text-blue-600 dark:text-blue-400">人生の実績を記録しよう</span>
+            <span className="block text-primary-600 dark:text-primary-400">人生の実績を記録しよう</span>
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
             あなたの人生の大切な瞬間を実績として記録し、振り返ることができます。
@@ -18,7 +18,7 @@ export default function LandingPage() {
             <div className="rounded-md shadow">
               <Link
                 href="/signup"
-                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
+                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
               >
                 はじめる
               </Link>
@@ -26,7 +26,7 @@ export default function LandingPage() {
             <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
               <Link
                 href="/login"
-                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
+                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
               >
                 ログイン
               </Link>
@@ -39,7 +39,7 @@ export default function LandingPage() {
             <div className="pt-6">
               <div className="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8">
                 <div className="-mt-6">
-                  <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-md shadow-lg">
+                  <div className="inline-flex items-center justify-center p-3 bg-primary-600 rounded-md shadow-lg">
                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -55,7 +55,7 @@ export default function LandingPage() {
             <div className="pt-6">
               <div className="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8">
                 <div className="-mt-6">
-                  <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-md shadow-lg">
+                  <div className="inline-flex items-center justify-center p-3 bg-primary-600 rounded-md shadow-lg">
                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -71,7 +71,7 @@ export default function LandingPage() {
             <div className="pt-6">
               <div className="flow-root bg-white dark:bg-gray-800 rounded-lg px-6 pb-8">
                 <div className="-mt-6">
-                  <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-md shadow-lg">
+                  <div className="inline-flex items-center justify-center p-3 bg-primary-600 rounded-md shadow-lg">
                     <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                     </svg>
