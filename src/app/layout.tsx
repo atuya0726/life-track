@@ -1,11 +1,24 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
 
-const inter = Inter({ subsets: ['latin'] });
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://life-track.vercel.app';
 
-export const metadata = {
-  title: 'Life Track',
-  description: '人生の実績を記録しよう',
+export const metadata: Metadata = {
+  title: 'Life Track - 人生の実績を記録しよう',
+  description: 'あなたの人生の大切な瞬間を実績として記録し、振り返ることができます。新しい挑戦の動機づけにもなります。',
+  openGraph: {
+    title: 'Life Track - 人生の実績を記録しよう',
+    description: 'あなたの人生の大切な瞬間を実績として記録し、振り返ることができます。新しい挑戦の動機づけにもなります。',
+    url: baseUrl,
+    siteName: 'Life Track',
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Life Track - 人生の実績を記録しよう',
+    description: 'あなたの人生の大切な瞬間を実績として記録し、振り返ることができます。新しい挑戦の動機づけにもなります。',
+  },
 };
 
 export default function RootLayout({
@@ -15,9 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className} suppressHydrationWarning>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 } 
